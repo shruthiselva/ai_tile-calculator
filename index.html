@@ -1,247 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>AI-Powered Tile Calculator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Minimal styling for demonstration */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 1rem;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      }
+      .chat-section {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+      }
+      .chat-messages {
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        border-bottom: 1px solid #ccc;
+        background: #fafafa;
+      }
+      .message {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+      }
+      .user-message {
+        background: #007bff;
+        color: white;
+        align-self: flex-end;
+      }
+      .bot-message {
+        background: #e2e2e2;
+        color: #333;
+        align-self: flex-start;
+        position: relative;
+      }
+      .ai-tag {
+        font-size: 9px;
+        color: #777;
+        margin-top: 4px;
+        font-style: italic;
+      }
+      .input-area {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+      }
+      #user-input {
+        flex: 1;
+        padding: 8px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        outline: none;
+      }
+      #send-btn {
+        margin-left: 10px;
+        background: #007bff;
+        border: none;
+        color: white;
+        padding: 0 16px;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      #send-btn:hover {
+        background: #0056b3;
+      }
+      .quick-replies {
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: #f0f0f0;
+      }
+      .quick-reply {
+        background: #eee;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        user-select: none;
+        border: 1px solid #ccc;
+      }
+      .quick-reply:hover {
+        background: #ddd;
+      }
+      .progress-container {
+        margin: 10px 0;
+      }
+      .progress-bar {
+        background: #ddd;
+        height: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: #007bff;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .result-card {
+        display: none;
+        background: #e8f4fc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+      }
+      .result-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .result-item {
+        flex: 1;
+        text-align: center;
+      }
+      .result-value {
+        font-weight: bold;
+        font-size: 1.4rem;
+      }
+      .result-label {
+        font-size: 0.9rem;
+        color: #555;
+      }
+      /* Modal basic */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+      }
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+      }
+      .modal-header {
+        margin-bottom: 10px;
+      }
+      .form-group {
+        margin-bottom: 10px;
+      }
+      input[type=email], input[type=text] {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .modal-btn {
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .cancel-btn {
+        background: #ccc;
+        border: none;
+        border-radius: 4px;
+      }
+      .submit-btn {
+        background: #007bff;
+        border: none;
+        color: white;
+        border-radius: 4px;
+      }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div class="analytics-badge">
-            <i class="fas fa-chart-line"></i>
-            <span>Analytics Active: Tracking preferences for better recommendations</span>
-        </div>
-        
-        <header>
-            <div class="logo-container">
-                <div class="logo">
-                    <i class="fas fa-tile"></i>
-                </div>
-                <h1>AI Tile Calculator</h1>
+        <h1>AI-Powered Tile Calculator</h1>
+
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Calculation Progress</span>
+                <span>Step 0 of 4</span>
             </div>
-            <p>Calculate exactly how many tiles you need with our conversational AI assistant</p>
-        </header>
-        
-        <div class="app-container">
-            <div class="chat-section">
-                <div class="chat-header">
-                    <h2><i class="fas fa-robot"></i> Tile Assistant</h2>
-                    <div class="chat-controls">
-                        <button title="Minimize"><i class="fas fa-minus"></i></button>
-                        <button title="Expand"><i class="fas fa-expand"></i></button>
-                        <button title="Close"><i class="fas fa-times"></i></button>
-                    </div>
-                </div>
-                
-                <div class="progress-container">
-                    <div class="progress-header">
-                        <span>Calculation Progress</span>
-                        <span>Step 1 of 4</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
-                    </div>
-                </div>
-                
-                <div class="chat-messages" id="chat-messages">
-                    <div class="message bot-message">
-                        Hi there! 👋 I'm your AI-powered tile assistant. I'll help you calculate exactly how many tiles you need for your project. Are you looking for floor tiles or wall tiles?
-                        <div class="ai-tag">AI Powered</div>
-                    </div>
-                </div>
-                
-                <div class="quick-replies" id="quick-replies">
-                    <div class="quick-reply" data-reply="Floor"><i class="fas fa-floor"></i> Floor Tiles</div>
-                    <div class="quick-reply" data-reply="Wall"><i class="fas fa-border-style"></i> Wall Tiles</div>
-                    <div class="quick-reply" data-reply="Both"><i class="fas fa-tasks"></i> Both</div>
-                </div>
-                
-                <div class="input-area">
-                    <input type="text" id="user-input" placeholder="Type your message...">
-                    <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
-                </div>
-                
-                <div class="voice-control">
-                    <button class="voice-btn">
-                        <i class="fas fa-microphone"></i> Voice Input
-                    </button>
-                </div>
-            </div>
-            
-            <div class="result-card" id="result-card">
-                <h3>Your Tile Calculation</h3>
-                <div class="result-details">
-                    <div class="result-item">
-                        <div class="result-value">85</div>
-                        <div class="result-label">Tiles Needed</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value">9</div>
-                        <div class="result-label">Boxes Required</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value">120 sq.ft</div>
-                        <div class="result-label">Coverage Area</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-value">₹9,475</div>
-                        <div class="result-label">Estimated Cost</div>
-                    </div>
-                </div>
-                <div class="result-note">
-                    <i class="fas fa-info-circle"></i>
-                    This includes a 10% buffer for cuts and waste. Actual needs may vary based on pattern and room shape.
-                </div>
-                <div class="result-actions">
-                    <button class="action-btn pdf-btn">
-                        <i class="fas fa-file-pdf"></i> Download as PDF
-                    </button>
-                    <button class="action-btn email-btn">
-                        <i class="fas fa-envelope"></i> Email Results
-                    </button>
-                    <button class="action-btn save-btn">
-                        <i class="fas fa-save"></i> Save Project
-                    </button>
-                </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
             </div>
         </div>
-        
-        <div class="products-section">
-            <div class="section-header">
-                <h3>Recommended Tiles for You</h3>
-                <div class="section-controls">
-                    <button class="section-btn">
-                        <i class="fas fa-sliders-h"></i> Filter
-                    </button>
-                    <button class="section-btn">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+
+        <div class="chat-section">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message bot-message">
+                    Hi there! 👋 I'm your AI-powered tile assistant. I'll help you calculate exactly how many tiles you need for your project. Are you looking for floor tiles or wall tiles?
+                    <div class="ai-tag">AI Powered</div>
                 </div>
             </div>
-            <div class="products-carousel">
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-border-all"></i>
-                        <div class="product-tag">Popular</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Marble Elegance</h4>
-                        <div class="product-meta">
-                            <span>Floor Tile</span>
-                            <span>24x24 in</span>
-                        </div>
-                        <div class="product-description">Premium marble look tile with realistic veining and durable finish.</div>
-                        <div class="product-price">₹299/sq.ft</div>
-                        <div class="product-actions">
-                            <button class="view-btn">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                            <button class="cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Add
-                            </button>
-                        </div>
-                    </div>
+
+            <div class="quick-replies" id="quick-replies">
+                <div class="quick-reply" data-reply="Floor Tiles">Floor Tiles</div>
+                <div class="quick-reply" data-reply="Wall Tiles">Wall Tiles</div>
+                <div class="quick-reply" data-reply="Both">Both</div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your message..." />
+                <button id="send-btn"><i class="fas fa-paper-plane"></i> Send</button>
+            </div>
+        </div>
+
+        <div class="result-card" id="result-card">
+            <h3>Your Tile Calculation</h3>
+            <div class="result-details">
+                <div class="result-item">
+                    <div class="result-value">0</div>
+                    <div class="result-label">Tiles Needed</div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-th"></i>
-                        <div class="product-tag">Best Seller</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Subway White</h4>
-                        <div class="product-meta">
-                            <span>Wall Tile</span>
-                            <span>3x6 in</span>
-                        </div>
-                        <div class="product-description">Classic subway tiles with a glossy finish for a timeless look.</div>
-                        <div class="product-price">₹189/sq.ft</div>
-                        <div class="product-actions">
-                            <button class="view-btn">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                            <button class="cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Add
-                            </button>
-                        </div>
-                    </div>
+                <div class="result-item">
+                    <div class="result-value">0</div>
+                    <div class="result-label">Boxes Required</div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-square"></i>
-                        <div class="product-tag">Eco-Friendly</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Wooden Plank</h4>
-                        <div class="product-meta">
-                            <span>Floor Tile</span>
-                            <span>6x36 in</span>
-                        </div>
-                        <div class="product-description">Wood-look porcelain tiles with realistic texture and grain.</div>
-                        <div class="product-price">₹319/sq.ft</div>
-                        <div class="product-actions">
-                            <button class="view-btn">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                            <button class="cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Add
-                            </button>
-                        </div>
-                    </div>
+                <div class="result-item">
+                    <div class="result-value">0 sq.ft</div>
+                    <div class="result-label">Coverage Area</div>
                 </div>
-                
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-gem"></i>
-                    </div>
-                    <div class="product-info">
-                        <h4>Mosaic Pattern</h4>
-                        <div class="product-meta">
-                            <span>Decorative</span>
-                            <span>1x1 in</span>
-                        </div>
-                        <div class="product-description">Glass mosaic tiles for accent walls and decorative features.</div>
-                        <div class="product-price">₹499/sq.ft</div>
-                        <div class="product-actions">
-                            <button class="view-btn">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                            <button class="cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Add
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-card">
-                    <div class="product-img">
-                        <i class="fas fa-bath"></i>
-                        <div class="product-tag">Water Resistant</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Bath Stone</h4>
-                        <div class="product-meta">
-                            <span>Bathroom</span>
-                            <span>12x12 in</span>
-                        </div>
-                        <div class="product-description">Slip-resistant tiles perfect for bathrooms and wet areas.</div>
-                        <div class="product-price">₹249/sq.ft</div>
-                        <div class="product-actions">
-                            <button class="view-btn">
-                                <i class="fas fa-info-circle"></i> Details
-                            </button>
-                            <button class="cart-btn">
-                                <i class="fas fa-shopping-cart"></i> Add
-                            </button>
-                        </div>
-                    </div>
+                <div class="result-item">
+                    <div class="result-value">₹0</div>
+                    <div class="result-label">Estimated Cost</div>
                 </div>
             </div>
-            <div class="currency-info">
-                All prices shown in Indian Rupees (₹)
+            <div class="result-note">
+                <i class="fas fa-info-circle"></i>
+                This includes a 10% buffer for cuts and waste. Actual needs may vary based on pattern and room shape.
             </div>
         </div>
     </div>
@@ -254,19 +263,15 @@
             </div>
             <div class="form-group">
                 <label for="email-input">Email Address</label>
-                <input type="email" id="email-input" placeholder="your@email.com">
+                <input type="email" id="email-input" placeholder="your@email.com" />
             </div>
             <div class="form-group">
                 <label for="name-input">Your Name</label>
-                <input type="text" id="name-input" placeholder="John Smith">
+                <input type="text" id="name-input" placeholder="John Smith" />
             </div>
             <div class="modal-actions">
-                <button class="modal-btn cancel-btn" id="cancel-email">
-                    Cancel
-                </button>
-                <button class="modal-btn submit-btn" id="submit-email">
-                    <i class="fas fa-paper-plane"></i> Send Email
-                </button>
+                <button class="modal-btn cancel-btn" id="cancel-email">Cancel</button>
+                <button class="modal-btn submit-btn" id="submit-email"><i class="fas fa-paper-plane"></i> Send Email</button>
             </div>
         </div>
     </div>
